@@ -269,7 +269,6 @@ header p {
 
 .data-table-section {
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
     padding: 32px;
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -308,17 +307,19 @@ header p {
 
 .table-container {
     overflow-x: auto;
-    max-height: 500px;
     overflow-y: auto;
+    max-height: 500px;
     border-radius: 12px;
     border: 1px solid rgba(226, 232, 240, 0.8);
+    position: relative;
 }
 
-table {
+#dataTable {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
     background: white;
+    position: relative;
 }
 
 th, td {
@@ -327,16 +328,17 @@ th, td {
     border-bottom: 1px solid rgba(226, 232, 240, 0.6);
 }
 
-th {
-    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+#dataTable thead th {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
     font-weight: 700;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
     color: #475569;
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 tr:hover {
@@ -943,4 +945,10 @@ footer {
     .footer-content p {
         font-size: 12px;
     }
+}/* 確保
+thead的sticky定位 */
+#dataTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 99;
 }
