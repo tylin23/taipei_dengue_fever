@@ -1259,7 +1259,7 @@ function updateTableStatusWithSort(totalCount, displayCount) {
         statusText += `  |  顯示前 1000 筆資料（共 ${totalCount} 筆）`;
     }
     
-    statusText += `  |  總資料量: ${allData.length} 筆`;
+    statusText += `  |  本平台目前總資料量: ${allData.length} 筆`;
     
     statusDiv.textContent = statusText;
 }
