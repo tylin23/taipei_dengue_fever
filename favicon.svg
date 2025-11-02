@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <style>
+      .mosquito-body { fill: #2c3e50; }
+      .mosquito-wing { fill: rgba(52, 152, 219, 0.3); stroke: #34495e; stroke-width: 0.5; }
+      .mosquito-leg { stroke: #2c3e50; stroke-width: 0.8; fill: none; }
+      .mosquito-antenna { stroke: #2c3e50; stroke-width: 0.6; fill: none; }
+      .mosquito-proboscis { stroke: #e74c3c; stroke-width: 1; fill: none; }
+    </style>
+  </defs>
+  
+  <!-- 蚊子身體 -->
+  <ellipse cx="16" cy="18" rx="2" ry="8" class="mosquito-body"/>
+  
+  <!-- 蚊子頭部 -->
+  <circle cx="16" cy="8" r="2.5" class="mosquito-body"/>
+  
+  <!-- 蚊子翅膀 -->
+  <ellipse cx="12" cy="14" rx="4" ry="2" class="mosquito-wing" transform="rotate(-20 12 14)"/>
+  <ellipse cx="20" cy="14" rx="4" ry="2" class="mosquito-wing" transform="rotate(20 20 14)"/>
+  <ellipse cx="11" cy="16" rx="3" ry="1.5" class="mosquito-wing" transform="rotate(-30 11 16)"/>
+  <ellipse cx="21" cy="16" rx="3" ry="1.5" class="mosquito-wing" transform="rotate(30 21 16)"/>
+  
+  <!-- 蚊子腿部 -->
+  <path d="M14 20 L10 24 L8 26" class="mosquito-leg"/>
+  <path d="M18 20 L22 24 L24 26" class="mosquito-leg"/>
+  <path d="M14 16 L9 18 L7 20" class="mosquito-leg"/>
+  <path d="M18 16 L23 18 L25 20" class="mosquito-leg"/>
+  <path d="M14 22 L11 26 L9 28" class="mosquito-leg"/>
+  <path d="M18 22 L21 26 L23 28" class="mosquito-leg"/>
+  
+  <!-- 蚊子觸角 -->
+  <path d="M14 6 L12 4" class="mosquito-antenna"/>
+  <path d="M18 6 L20 4" class="mosquito-antenna"/>
+  <circle cx="12" cy="4" r="0.5" class="mosquito-body"/>
+  <circle cx="20" cy="4" r="0.5" class="mosquito-body"/>
+  
+  <!-- 蚊子口器 (吸血管) -->
+  <path d="M16 8 L16 2" class="mosquito-proboscis"/>
+  
+  <!-- 蚊子眼睛 -->
+  <circle cx="14.5" cy="7.5" r="0.8" fill="#e74c3c"/>
+  <circle cx="17.5" cy="7.5" r="0.8" fill="#e74c3c"/>
+  <circle cx="14.5" cy="7.5" r="0.3" fill="#fff"/>
+  <circle cx="17.5" cy="7.5" r="0.3" fill="#fff"/>
+</svg>
