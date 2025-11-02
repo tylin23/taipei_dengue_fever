@@ -1,0 +1,845 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", "微軟正黑體", Arial, sans-serif;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    color: #2c3e50;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: #2c3e50;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+}
+
+header h1 {
+    font-size: 2.8em;
+    margin-bottom: 12px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+header p {
+    font-size: 1.3em;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+.controls {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group label {
+    font-weight: bold;
+    min-width: 100px;
+}
+
+.control-group select {
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 14px;
+    min-width: 160px;
+    background: white;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    transform: translateY(-1px);
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+.card h3 {
+    color: #64748b;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.metric {
+    font-size: 3em;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.charts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 40px;
+}
+
+.chart-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.chart-section:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.chart-section h3 {
+    margin-bottom: 24px;
+    color: #2c3e50;
+    font-size: 1.4em;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.chart-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+#mapContainer {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+#taipeiMap {
+    flex: 1;
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+#taipeiMap svg {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.05));
+}
+
+#mapLegend {
+    min-width: 180px;
+    background: rgba(248, 250, 252, 0.8);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#mapLegend h4 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 900;
+    font-size: 1.1em;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.legend-item:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.data-table-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.data-table-section h3 {
+    margin-bottom: 24px;
+    color: #2c3e50;
+    font-size: 1.4em;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.data-table-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+}
+
+.table-status {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 8px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.table-container {
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+}
+
+th, td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+th {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    color: #475569;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+}
+
+td {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.district {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.district:hover {
+    opacity: 0.8;
+    stroke-width: 3;
+}
+
+.district-selected {
+    stroke: #ff0000;
+    stroke-width: 4;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    color: #2c3e50;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* 響應式設計 - 平板 */
+@media (max-width: 1024px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    #mapContainer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    #mapLegend {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    header h1 {
+        font-size: 2em;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .control-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-group label {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+    
+    .control-group select {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .card h3 {
+        flex-direction: column;
+        gap: 4px;
+        font-size: 1em;
+    }
+    
+    .metric {
+        font-size: 2.5em;
+    }
+    
+    .charts-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .chart-section {
+        padding: 20px;
+    }
+    
+    .chart-section h3 {
+        font-size: 1.2em;
+    }
+    
+    #mapContainer {
+        flex-direction: column;
+    }
+    
+    .data-table-section {
+        padding: 20px;
+    }
+    
+    .table-container {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 8px 4px;
+    }
+    
+    .sort-icon {
+        font-size: 10px;
+    }
+}
+
+/* 響應式設計 - 小手機 */
+@media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+    
+    header {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 16px;
+    }
+    
+    .metric {
+        font-size: 2em;
+    }
+    
+    .chart-section {
+        padding: 15px;
+    }
+    
+    .data-table-section {
+        padding: 15px;
+    }
+    
+    .table-container {
+        font-size: 11px;
+    }
+    
+    th, td {
+        padding: 6px 2px;
+    }
+    
+    .table-status {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+/* 載入動畫 */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* He
+ader 新增樣式 */
+.header-icon {
+    font-size: 3em;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+.header-stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.stat-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #2c3e50;
+}
+
+/* Card 新增樣式 */
+.card-icon {
+    font-size: 2.5em;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+.metric-change {
+    font-size: 0.9em;
+    color: #64748b;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* 新增動畫效果 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+
+/* 改進的按鈕樣式 */
+.control-group label {
+    font-weight: 600;
+    min-width: 120px;
+    color: #475569;
+}
+
+/* 新增漸變背景動畫 */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body {
+    background: linear-gradient(-45deg, #e3f2fd, #f3e5f5, #e8f5e8, #fff3e0);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* 改進的滾動條樣式 */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* 新增微互動效果 */
+.control-group select:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+/* 改進的地圖樣式 */
+.district {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.district:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* 新增脈衝動畫 */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.metric:hover {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* 自製資訊圖示樣式 */
+.info-icon-custom {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: #94a3b8;
+    border-radius: 50%;
+    color: white;
+    text-align: center;
+    line-height: 16px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.info-icon-custom::before {
+    content: "?";
+    font-family: "Arial Black", "Helvetica Neue", "Franklin Gothic Medium", sans-serif;
+    font-weight: 900;
+}
+
+.info-icon-custom:hover {
+    background-color: #667eea;
+    transform: scale(1.1);
+}
+
+/* 自製圖示提示框樣式 */
+.info-icon-custom::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 150%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: nowrap;
+    max-width: 300px;
+    white-space: normal;
+    width: max-content;
+    max-width: 120px;
+    line-height: 1.4;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.info-icon-custom:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 響應式調整 - 資訊圖示 */
+@media (max-width: 768px) {
+    .info-icon-custom::after {
+        bottom: 120%;
+        max-width: 200px;
+        font-size: 12px;
+    }
+}
+
+/* 點擊效果 */
+.info-icon-custom:active {
+    transform: scale(0.95);
+}
+
+/* 改進的提示框動畫 */
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.info-icon-custom:hover::after {
+    animation: tooltipFadeIn 0.3s ease-out;
+}/* 表格
+排序功能樣式 */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0) !important;
+}
+
+.sort-icon {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+    transition: all 0.3s ease;
+}
+
+.sortable.sort-asc .sort-icon {
+    color: #667eea;
+    transform: scale(1.1);
+}
+
+.sortable.sort-desc .sort-icon {
+    color: #667eea;
+    transform: scale(1.1);
+}
+
+/* 排序時的表頭高亮 */
+.sortable.sort-asc,
+.sortable.sort-desc {
+    background: linear-gradient(135deg, #e0e7ff, #c7d2fe) !important;
+    color: #3730a3;
+    font-weight: 700;
+}
+
+/* 表格行的排序動畫 */
+.table-container tbody tr {
+    transition: all 0.3s ease;
+}
+
+.sorting .table-container tbody tr {
+    opacity: 0.7;
+}
+
+/* 排序提示 */
+.sort-info {
+    display: none;
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: normal;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.sortable:hover .sort-info {
+    display: block;
+}

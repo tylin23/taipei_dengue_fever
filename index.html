@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臺北市登革熱病媒蚊密度監測儀表板</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+    <!-- 備用 CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-icon">🦟</div>
+            <h1>臺北市登革熱病媒蚊密度監測儀表板</h1>
+            <p id="dataRangeInfo">載入中...</p>
+            <div class="header-stats">
+                <p><span class="stat-badge">資料來源：<a href="https://data.taipei/dataset/detail?id=1ec5170f-8507-48ad-ad91-c50cb1493119">臺北市資料大平台 — 臺北市登革熱病媒蚊密度調查結果</a></span></p>
+            </div>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="monthSelect">選擇月份：</label>
+                <select id="monthSelect">
+                    <option value="all">全部月份</option>
+                    <!-- 動態生成的選項將在這裡插入 -->
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="districtSelect">選擇行政區：</label>
+                <select id="districtSelect">
+                    <option value="all">全部行政區</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="summary-cards">
+                <div class="card">
+                    <div class="card-icon">🏠</div>
+                    <h3>總調查戶數</h3>
+                    <div class="metric" id="totalHouseholds">-</div>
+                    <div class="metric-change">+5.2% 較上月</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚠️</div>
+                    <h3>陽性戶數</h3>
+                    <div class="metric" id="positiveHouseholds">-</div>
+                    <div class="metric-change">-2.1% 較上月</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>
+                        平均布氏指數<span class="info-icon-custom" 
+                              data-tooltip="布氏指數：調查100戶住宅，發現有登革熱病媒蚊幼蟲孳生陽性容器數。"></span>
+                    </h3>
+                    <div class="metric" id="avgBreteauIndex">-</div>
+                    <div class="metric-change">風險評估</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🧪</div>
+                    <h3>
+                        平均容器指數<span class="info-icon-custom" 
+                              data-tooltip="容器指數：調查100個容器，發現有登革熱病媒蚊幼蟲孳生容器之百分比。"></span>
+                    </h3>
+                    <div class="metric" id="avgContainerIndex">-</div>
+                    <div class="metric-change">監測指標</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-section">
+                    <div id="mapContainer">
+                        <div id="taipeiMap"></div>
+                        <div id="mapLegend">
+                            <h4>布氏指數等級</h4>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #10b981;"></div>
+                                <span>0 (安全)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #f59e0b;"></div>
+                                <span>1-3 (低風險)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #f97316;"></div>
+                                <span>4-9 (中風險)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #ef4444;"></div>
+                                <span>≥10 (高風險)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <h3>各月份布氏指數趨勢</h3>
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+
+                <div class="chart-section">
+                    <h3>各行政區布氏指數比較</h3>
+                    <canvas id="districtComparisonChart"></canvas>
+                </div>
+
+                <div class="chart-section">
+                    <h3>調查種類分布</h3>
+                    <canvas id="surveyTypeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="data-table-section">
+                <h3>詳細資料表</h3>
+                <div id="tableStatus" class="table-status"></div>
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="日期">
+                                    日期 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="區別">
+                                    行政區 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="里別">
+                                    里別 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="調查戶數">
+                                    調查戶數 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="陽性戶數">
+                                    陽性戶數 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="布氏指數">
+                                    布氏指數 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="布氏級數">
+                                    布氏級數 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th class="sortable" data-column="容器指數">
+                                    容器指數 <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
