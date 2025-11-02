@@ -111,7 +111,7 @@ function updateDataRangeInfo(availableFiles) {
     } else {
         rangeText = `${firstFile.year}年${firstFile.month}月至${lastFile.year}年${lastFile.month}月病媒蚊密度調查結果`;
     }
-    
+     
     const infoElement = document.getElementById('dataRangeInfo');
     if (infoElement) {
         infoElement.textContent = rangeText;
@@ -584,16 +584,16 @@ function updateDistrictComparisonChart() {
                 label: '平均布氏指數',
                 data: Object.values(districtData),
                 backgroundColor: Object.values(districtData).map(value => {
-                    if (value === 0) return 'rgba(16, 185, 129, 0.8)';
-                    if (value <= 3) return 'rgba(245, 158, 11, 0.8)';
-                    if (value <= 9) return 'rgba(249, 115, 22, 0.8)';
-                    return 'rgba(239, 68, 68, 0.8)';
+                    const color = getColorByBreteauIndex(value);
+                    // 將 hex 顏色轉換為 rgba 格式
+                    const hex = color.replace('#', '');
+                    const r = parseInt(hex.substr(0, 2), 16);
+                    const g = parseInt(hex.substr(2, 2), 16);
+                    const b = parseInt(hex.substr(4, 2), 16);
+                    return `rgba(${r}, ${g}, ${b}, 0.8)`;
                 }),
                 borderColor: Object.values(districtData).map(value => {
-                    if (value === 0) return '#10b981';
-                    if (value <= 3) return '#f59e0b';
-                    if (value <= 9) return '#f97316';
-                    return '#ef4444';
+                    return getColorByBreteauIndex(value);
                 }),
                 borderWidth: 2,
                 borderRadius: {
@@ -892,12 +892,18 @@ function getDistrictSummary(districtName) {
     };
 }
 
-// 根據布氏指數獲取顏色
+// 根據布氏指數獲取顏色（依據官方等級標準）
 function getColorByBreteauIndex(index) {
-    if (index === 0) return '#10b981';
-    if (index <= 3) return '#f59e0b';
-    if (index <= 9) return '#f97316';
-    return '#ef4444';
+    if (index === 0) return '#10b981';           // 0: 安全 (綠色)
+    if (index <= 4) return '#22c55e';            // 1-4: 等級1 (淺綠色)
+    if (index <= 9) return '#eab308';            // 5-9: 等級2 (黃色)
+    if (index <= 19) return '#f59e0b';           // 10-19: 等級3 (橙色)
+    if (index <= 34) return '#f97316';           // 20-34: 等級4 (深橙色)
+    if (index <= 49) return '#ef4444';           // 35-49: 等級5 (紅色)
+    if (index <= 74) return '#dc2626';           // 50-74: 等級6 (深紅色)
+    if (index <= 99) return '#b91c1c';           // 75-99: 等級7 (暗紅色)
+    if (index <= 199) return '#991b1b';          // 100-199: 等級8 (極深紅色)
+    return '#7f1d1d';                            // ≥200: 等級9 (最深紅色)
 }
 
 // 格式化日期
@@ -1020,20 +1026,32 @@ function hideTooltip() {
     }
 }
 
-// 獲取風險等級文字
+// 獲取風險等級文字（依據官方等級標準）
 function getRiskLevel(index) {
     if (index === 0) return '安全';
-    if (index <= 3) return '低風險';
-    if (index <= 9) return '中風險';
-    return '高風險';
+    if (index <= 4) return '等級1 (極低風險)';
+    if (index <= 9) return '等級2 (低風險)';
+    if (index <= 19) return '等級3 (輕度風險)';
+    if (index <= 34) return '等級4 (中度風險)';
+    if (index <= 49) return '等級5 (中高風險)';
+    if (index <= 74) return '等級6 (高風險)';
+    if (index <= 99) return '等級7 (極高風險)';
+    if (index <= 199) return '等級8 (嚴重風險)';
+    return '等級9 (極嚴重風險)';
 }
 
-// 獲取風險顏色
+// 獲取風險顏色（依據官方等級標準）
 function getRiskColor(index) {
-    if (index === 0) return '#10b981';
-    if (index <= 3) return '#f59e0b';
-    if (index <= 9) return '#f97316';
-    return '#ef4444';
+    if (index === 0) return '#10b981';           // 0: 安全 (綠色)
+    if (index <= 4) return '#22c55e';            // 1-4: 等級1 (淺綠色)
+    if (index <= 9) return '#eab308';            // 5-9: 等級2 (黃色)
+    if (index <= 19) return '#f59e0b';           // 10-19: 等級3 (橙色)
+    if (index <= 34) return '#f97316';           // 20-34: 等級4 (深橙色)
+    if (index <= 49) return '#ef4444';           // 35-49: 等級5 (紅色)
+    if (index <= 74) return '#dc2626';           // 50-74: 等級6 (深紅色)
+    if (index <= 99) return '#b91c1c';           // 75-99: 等級7 (暗紅色)
+    if (index <= 199) return '#991b1b';          // 100-199: 等級8 (極深紅色)
+    return '#7f1d1d';                            // ≥200: 等級9 (最深紅色)
 }
 
 // 顯示錯誤訊息
