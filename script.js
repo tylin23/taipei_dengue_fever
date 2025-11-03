@@ -222,6 +222,95 @@ function setupEventListeners() {
     document.getElementById('monthSelect').addEventListener('change', filterData);
     document.getElementById('districtSelect').addEventListener('change', filterData);
     setupTableSorting();
+    setupInfoIconTooltips();
+}
+
+// 設定資訊圖示 tooltip 點擊功能
+function setupInfoIconTooltips() {
+    const infoIcons = document.querySelectorAll('.info-icon-custom');
+    
+    // 檢測是否為觸控設備
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const hasHover = window.matchMedia('(hover: hover)').matches;
+    
+    infoIcons.forEach(icon => {
+        if (isTouchDevice || !hasHover) {
+            // 觸控設備：使用點擊事件
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 關閉其他已開啟的 tooltip
+                infoIcons.forEach(otherIcon => {
+                    if (otherIcon !== this) {
+                        otherIcon.classList.remove('active');
+                    }
+                });
+                
+                // 切換當前 tooltip
+                this.classList.toggle('active');
+            });
+            
+            // 觸控事件支援
+            icon.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 關閉其他已開啟的 tooltip
+                infoIcons.forEach(otherIcon => {
+                    if (otherIcon !== this) {
+                        otherIcon.classList.remove('active');
+                    }
+                });
+                
+                // 切換當前 tooltip
+                this.classList.toggle('active');
+            });
+        } else {
+            // 桌面設備：使用 hover 事件，但添加 mouseleave 確保 tooltip 消失
+            icon.addEventListener('mouseenter', function() {
+                // 移除所有 active 類別，讓 CSS hover 生效
+                infoIcons.forEach(otherIcon => {
+                    otherIcon.classList.remove('active');
+                });
+            });
+            
+            icon.addEventListener('mouseleave', function() {
+                // 確保 tooltip 消失
+                this.classList.remove('active');
+            });
+            
+            // 桌面版也支援點擊，但行為不同
+            icon.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // 桌面版點擊時，如果已經 hover 顯示，則切換 active 狀態
+                // 這樣可以讓用戶"固定"顯示 tooltip
+                this.classList.toggle('active');
+            });
+        }
+    });
+    
+    // 點擊其他地方時關閉所有 active tooltip
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.info-icon-custom')) {
+            infoIcons.forEach(icon => {
+                icon.classList.remove('active');
+            });
+        }
+    });
+    
+    // 觸控其他地方時關閉所有 active tooltip
+    if (isTouchDevice) {
+        document.addEventListener('touchstart', function(e) {
+            if (!e.target.closest('.info-icon-custom')) {
+                infoIcons.forEach(icon => {
+                    icon.classList.remove('active');
+                });
+            }
+        });
+    }
 }
 
 // 填充行政區選擇器
@@ -890,7 +979,7 @@ function updateTableStatus() {
         statusText += ` | 顯示最新 1000 筆資料（共 ${filteredCount} 筆）`;
     }
     
-    statusText += ` | 總資料量: ${totalCount} 筆`;
+    statusText += ` | 本平台目前總資料量: ${totalCount} 筆`;
     
     statusDiv.textContent = statusText;
 }
