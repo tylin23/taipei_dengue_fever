@@ -199,6 +199,13 @@ header p {
     border-radius: 2px;
 }
 
+/* Canvas 響應式樣式 */
+canvas {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+}
+
 #mapContainer {
     display: flex;
     flex-direction: column;
@@ -482,6 +489,13 @@ td {
         font-size: 1.2em;
     }
     
+    /* 手機版 Canvas 優化 */
+    .chart-section canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
     #mapContainer {
         gap: 15px;
     }
@@ -547,6 +561,14 @@ td {
     
     .chart-section {
         padding: 15px;
+    }
+    
+    /* 小手機版 Canvas 優化 */
+    .chart-section canvas {
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 200px;
     }
     
     .data-table-section {
@@ -734,26 +756,31 @@ body {
 
 /* 自製資訊圖示樣式 */
 .info-icon-custom {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 16px;
     height: 16px;
     background-color: #94a3b8;
     border-radius: 50%;
     color: white;
-    text-align: center;
-    line-height: 16px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: bold;
     margin-left: 2px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .info-icon-custom::before {
     content: "?";
     font-family: "Arial Black", "Helvetica Neue", "Franklin Gothic Medium", sans-serif;
     font-weight: 900;
+    display: block;
+    text-align: center;
+    line-height: 1;
 }
 
 .info-icon-custom:hover {
@@ -809,6 +836,16 @@ body {
         /* 增加點擊區域 */
         padding: 4px;
         margin: -4px;
+        /* 確保在手機上正確置中 */
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+    }
+    
+    .info-icon-custom::before {
+        /* 手機版字體微調 */
+        font-size: 11px;
+        line-height: 1;
     }
     
     .info-icon-custom::after {
