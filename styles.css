@@ -206,6 +206,12 @@ canvas {
     display: block;
 }
 
+/* 行政區圖表特殊高度限制 */
+#districtComparisonChart {
+    max-height: 400px !important;
+    height: 400px !important;
+}
+
 #mapContainer {
     display: flex;
     flex-direction: column;
@@ -493,6 +499,12 @@ td {
     .chart-section canvas {
         max-width: 100% !important;
         width: 100% !important;
+    }
+    
+    /* 手機版行政區圖表高度限制 */
+    #districtComparisonChart {
+        max-height: 350px !important;
+        height: 350px !important;
         height: auto !important;
     }
     
@@ -567,6 +579,12 @@ td {
     .chart-section canvas {
         max-width: 100% !important;
         width: 100% !important;
+    }
+    
+    /* 小手機版行政區圖表高度限制 */
+    #districtComparisonChart {
+        max-height: 320px !important;
+        height: 320px !important;
         height: auto !important;
         min-height: 200px;
     }

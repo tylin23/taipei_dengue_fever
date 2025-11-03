@@ -733,23 +733,25 @@ function updateDistrictComparisonChart() {
                 }),
                 borderWidth: 2,
                 borderRadius: {
-                    topLeft: 4,
                     topRight: 4,
-                    bottomLeft: 0,
-                    bottomRight: 0
+                    bottomRight: 4,
+                    topLeft: 0,
+                    bottomLeft: 0
                 },
                 borderSkipped: false
             }]
         },
         options: {
+            indexAxis: 'y', // 這讓圖表變成橫向
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
                 }
             },
             scales: {
-                y: {
+                x: {
                     beginAtZero: true,
                     title: {
                         display: true,
@@ -769,17 +771,24 @@ function updateDistrictComparisonChart() {
                         }
                     }
                 },
-                x: {
+                y: {
+                    categoryPercentage: 0.8, // 控制類別間距
+                    barPercentage: 0.6,      // 控制長條寬度
                     ticks: {
-                        maxRotation: 45,
                         color: '#64748b',
                         font: {
-                            weight: 500
+                            weight: 500,
+                            size: window.innerWidth <= 480 ? 11 : 12
                         }
                     },
                     grid: {
                         display: false
                     }
+                }
+            },
+            elements: {
+                bar: {
+                    borderWidth: 2
                 }
             }
         }
