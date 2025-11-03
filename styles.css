@@ -625,7 +625,7 @@ ader 新增樣式 */
     backdrop-filter: blur(10px);
     padding: 8px 16px;
     border-radius: 20px;
-    font-size: 0.9em;
+    font-size: 0.6em;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: #2c3e50;

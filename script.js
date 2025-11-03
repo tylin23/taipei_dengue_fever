@@ -24,38 +24,43 @@ const districtMapping = {
 };
 
 // 初始化
-document.addEventListener('DOMContentLoaded', function() {
-    loadData();
+document.addEventListener('DOMContentLoaded', async function() {
     setupEventListeners();
-    loadSVGMap();
+    await loadData();
+    await loadSVGMap();
 });
 
 // 動態檢測可用的CSV檔案
 async function detectAvailableFiles() {
-    const availableFiles = [];
     const years = [114, 113, 115]; // 可能的年份
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // 所有月份
     
+    // 建立所有可能的檔案檢測任務
+    const checkTasks = [];
     for (const year of years) {
         for (const month of months) {
             const filename = `data/臺北市${year}年${month}月登革熱病媒蚊密度調查結果表.csv`;
-            try {
-                const response = await fetch(filename, { method: 'HEAD' });
-                if (response.ok) {
-                    availableFiles.push({ year, month, filename });
-                }
-            } catch (error) {
-                // 檔案不存在，繼續檢查下一個
-            }
+            checkTasks.push(
+                fetch(filename, { method: 'HEAD' })
+                    .then(response => response.ok ? { year, month, filename } : null)
+                    .catch(() => null)
+            );
         }
     }
     
-    return availableFiles;
+    // 並行執行所有檢測任務
+    const results = await Promise.all(checkTasks);
+    
+    // 過濾出存在的檔案
+    return results.filter(result => result !== null);
 }
 
 // 載入所有CSV資料
 async function loadData() {
     try {
+        // 顯示載入狀態
+        updateLoadingStatus('正在檢測可用檔案...', 0);
+        
         // 動態檢測可用檔案
         const availableFiles = await detectAvailableFiles();
         
@@ -63,28 +68,70 @@ async function loadData() {
             throw new Error('找不到任何資料檔案');
         }
         
+        updateLoadingStatus(`找到 ${availableFiles.length} 個檔案，開始載入...`, 20);
+        
         // 更新頁面標題資訊
         updateDataRangeInfo(availableFiles);
         
-        // 載入所有可用檔案
-        const promises = availableFiles.map(file => 
-            fetch(file.filename)
-                .then(response => response.text())
-                .then(text => parseCSV(text, file.month, file.year))
-        );
+        // 載入所有可用檔案，添加進度追蹤
+        const loadedData = [];
+        const totalFiles = availableFiles.length;
         
-        const results = await Promise.all(promises);
-        allData = results.flat();
+        for (let i = 0; i < totalFiles; i++) {
+            const file = availableFiles[i];
+            const progress = 20 + (i / totalFiles) * 60; // 20-80%
+            
+            updateLoadingStatus(`載入中... (${i + 1}/${totalFiles})`, progress);
+            
+            try {
+                const response = await fetch(file.filename);
+                const text = await response.text();
+                const data = parseCSV(text, file.month, file.year);
+                loadedData.push(...data);
+            } catch (error) {
+                console.warn(`載入檔案失敗: ${file.filename}`, error);
+            }
+        }
+        
+        allData = loadedData;
         filteredData = [...allData];
+        
+        updateLoadingStatus('正在初始化介面...', 85);
         
         // 動態更新月份選擇器
         updateMonthSelect(availableFiles);
         
         populateDistrictSelect();
+        
+        updateLoadingStatus('載入完成！', 100);
+        
+        // 短暫延遲後隱藏進度條並顯示最終資訊
+        setTimeout(() => {
+            updateDataRangeInfo(availableFiles);
+        }, 500);
+        
         updateDashboard();
     } catch (error) {
         console.error('載入資料時發生錯誤:', error);
         showError('無法載入資料，請檢查檔案是否存在。');
+    }
+}
+
+// 更新載入狀態
+function updateLoadingStatus(message, progress = 0) {
+    const infoElement = document.getElementById('dataRangeInfo');
+    if (infoElement) {
+        infoElement.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="flex: 1;">
+                    <div style="font-size: 14px; color: #6b7280; margin-bottom: 4px;">${message}</div>
+                    <div style="width: 100%; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+                        <div style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <div style="font-size: 12px; color: #9ca3af; min-width: 40px; text-align: right;">${Math.round(progress)}%</div>
+            </div>
+        `;
     }
 }
 
@@ -892,6 +939,56 @@ function getDistrictSummary(districtName) {
     };
 }
 
+// 獲取行政區摘要資料（使用所有資料，不受篩選影響）
+function getDistrictSummaryFromAllData(districtName) {
+    const districtData = allData.filter(row => row['區別'] === districtName);
+    
+    if (districtData.length === 0) {
+        return { totalHouseholds: 0, positiveHouseholds: 0, avgBreteau: 0, avgContainer: 0 };
+    }
+    
+    return {
+        totalHouseholds: districtData.reduce((sum, row) => sum + parseInt(row['調查戶數'] || 0), 0),
+        positiveHouseholds: districtData.reduce((sum, row) => sum + parseInt(row['陽性戶數'] || 0), 0),
+        avgBreteau: districtData.reduce((sum, row) => sum + parseFloat(row['布氏指數'] || 0), 0) / districtData.length,
+        avgContainer: districtData.reduce((sum, row) => sum + parseFloat(row['容器指數'] || 0), 0) / districtData.length
+    };
+}
+
+// 獲取當前篩選條件下特定行政區的統計資料
+function getDistrictSummaryWithCurrentFilter(districtName) {
+    const selectedMonth = document.getElementById('monthSelect').value;
+    
+    // 根據當前篩選條件篩選該行政區的資料
+    let districtData = allData.filter(row => row['區別'] === districtName);
+    
+    // 如果有月份篩選，進一步篩選
+    if (selectedMonth !== 'all') {
+        if (selectedMonth.includes('-')) {
+            const [year, month] = selectedMonth.split('-');
+            districtData = districtData.filter(row => 
+                row.year.toString() === year && row.month.toString() === month
+            );
+        } else {
+            // 處理純月份格式（向後相容）
+            districtData = districtData.filter(row => 
+                row.month.toString() === selectedMonth
+            );
+        }
+    }
+    
+    if (districtData.length === 0) {
+        return { totalHouseholds: 0, positiveHouseholds: 0, avgBreteau: 0, avgContainer: 0 };
+    }
+    
+    return {
+        totalHouseholds: districtData.reduce((sum, row) => sum + parseInt(row['調查戶數'] || 0), 0),
+        positiveHouseholds: districtData.reduce((sum, row) => sum + parseInt(row['陽性戶數'] || 0), 0),
+        avgBreteau: districtData.reduce((sum, row) => sum + parseFloat(row['布氏指數'] || 0), 0) / districtData.length,
+        avgContainer: districtData.reduce((sum, row) => sum + parseFloat(row['容器指數'] || 0), 0) / districtData.length
+    };
+}
+
 // 根據布氏指數獲取顏色（依據官方等級標準）
 function getColorByBreteauIndex(index) {
     if (index === 0) return '#10b981';           // 0: 安全 (綠色)
@@ -932,16 +1029,17 @@ function highlightDistrict(districtId) {
 }
 
 // 載入SVG地圖
-function loadSVGMap() {
-    fetch('taipei-districts.svg')
-        .then(response => response.text())
-        .then(svgText => {
-            document.getElementById('taipeiMap').innerHTML = svgText;
-            setupMapInteractions();
-        })
-        .catch(error => {
-            console.error('載入地圖時發生錯誤:', error);
-        });
+async function loadSVGMap() {
+    try {
+        const response = await fetch('taipei-districts.svg');
+        const svgText = await response.text();
+        document.getElementById('taipeiMap').innerHTML = svgText;
+        setupMapInteractions();
+        // 載入完成後立即更新地圖顏色
+        updateMapColors();
+    } catch (error) {
+        console.error('載入地圖時發生錯誤:', error);
+    }
 }
 
 // 設定地圖互動
@@ -949,25 +1047,33 @@ function setupMapInteractions() {
     const districts = document.querySelectorAll('.district');
     
     districts.forEach(district => {
-        district.addEventListener('click', function() {
+        district.addEventListener('click', function(e) {
             const districtId = this.id;
             const districtName = Object.keys(districtMapping).find(
                 key => districtMapping[key] === districtId
             );
             
             if (districtName) {
+                // 先隱藏之前的 tooltip
+                hideTooltip();
+                
+                // 先篩選資料和高亮
                 document.getElementById('districtSelect').value = districtName;
                 filterData();
                 highlightDistrict(districtId);
+                
+                // 然後顯示更新後的 tooltip
+                setTimeout(() => {
+                    showTooltip(e, districtId);
+                }, 50);
             }
         });
         
-        district.addEventListener('mouseenter', function(e) {
-            showTooltip(e, this.id);
-        });
-        
-        district.addEventListener('mouseleave', function() {
-            hideTooltip();
+        // 點擊其他地方時隱藏 tooltip
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.district') && !e.target.closest('.tooltip')) {
+                hideTooltip();
+            }
         });
     });
 }
@@ -980,14 +1086,22 @@ function showTooltip(event, districtId) {
     
     if (!districtName) return;
     
-    const districtData = getDistrictSummary(districtName);
+    // 使用當前篩選條件下該行政區的統計資料
+    const districtData = getDistrictSummaryWithCurrentFilter(districtName);
     const riskLevel = getRiskLevel(districtData.avgBreteau);
+    
+    // 獲取當前篩選條件資訊
+    const selectedMonth = document.getElementById('monthSelect').value;
+    const filterInfo = selectedMonth === 'all' ? '全部月份' : selectedMonth.replace('-', '年') + '月';
     
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
     tooltip.innerHTML = `
         <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #2c3e50;">
             📍 ${districtName}
+        </div>
+        <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">
+            📅 ${filterInfo}
         </div>
         <div style="margin-bottom: 4px;">
             📊 平均布氏指數: <strong>${districtData.avgBreteau.toFixed(1)}</strong>
